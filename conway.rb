@@ -23,7 +23,6 @@ def plot_cells_rand
         draw_cell x, y
       end
       @cells << [x, y, on]
-      #@cells << Vector.new(x, y)
     end
   end
 end
@@ -47,19 +46,33 @@ def draw_cells
 end
 
 def get_neighbors i
-  xrow = @cells[i][0] +1
-  ycol = @cells[i][1] +1
-  if xrow*ycol - 1 == i
-    return xrow, ycol
-  end
+  cur_cell = @cells[i]
+  x,y,on = cur_cell
+
+  north = x > 0 ? @cells[i-@xcells] : nil
+  south = x < @xcells ? @cells[i+@xcells] : nil
+  east = y > 0 ? @cells[i-1] : nil
+  west = y < @ycells ? @cells[i+1] : nil
+  return north, south, east, west
 end
+
+# xcells = 4
+# ycells = 4
+# ncells = 16
+# to get -y cell at 0,1 add @xcells+index = 5
+# to get +y cell at 1,2 subtract @xcells from index to = 2
+# to get -x cell at 0,1 subtract -1 from index if y > 0 = 0
+# to get +x cell at 2,2 add +1 if y < @ycells
+# 0,0 0,1 0,2 0,3 # 0, 1, 2, 3,
+# 1,0 1,1 1,2 1,3 # 4, 5, 6, 7
+# 2,0 2,1 2,2 2,3 # 8, 9, 10, 11
+# 3,0 3,1 3,2 3,3 # 12, 13, 14, 15
 
 def update_cells
   @cells.each_with_index do |v, i|
-    get_neighbors i
-    prev_cell = @cells[i-1]
+    n,s,e,w = get_neighbors i
     x, y, on = v
-    if prev_cell[2]
+    if n and n[2]
       @cells[i][2] = !on
     end
   end
